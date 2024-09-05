@@ -1,0 +1,147 @@
+.icon-container
+{
+    border-radius: 50%;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    transition:  0.3s ease-in-out;
+}
+.icon-container:hover
+{
+    background-color: #777777;
+}
+
+.searchbar{
+    width:100%;
+    height: 35px;
+    border-radius: 5px;
+    background: transparent;
+    border: 2px solid rgba(169, 176, 250, 0.353);
+    outline: none;
+}
+.searchbar:focus
+{
+    border: 2px solid rgba(90, 102, 232, 0.585);
+}
+.commentinput
+{
+    outline: none;
+    border:none;
+    background: transparent;
+    margin: 10px 0;
+    width: auto;    
+}
+
+.commentinput1
+{
+    outline: none;
+    border:none;
+    background:transparent;
+    margin: 10px 0;
+    margin-left: 12px;
+    width: auto; 
+    font-size: 14px;
+
+}
+
+.video1
+{
+    margin-top: 20px;
+    width: 270px;
+    margin-left: 16px;
+    max-height: 380px;
+}
+
+::-webkit-scrollbar{
+    width: 2px;
+    border-radius: 5px;
+    height: 5px;
+    margin-top: 2px;
+}
+
+.option5{
+    color: rgb(109, 109, 109);
+    background-color: red;
+}
+
+::-webkit-scrollbar-track{
+    background-color:transparent;
+    /* color: rgb(88, 164, 197); */
+}
+
+::-webkit-scrollbar-thumb{
+    background-color:rgb(168, 168, 168);
+}
+
+/* 
+
+@keyframes spin {
+
+    0%{
+        transform: rotate(0deg);
+    }
+
+    100%{
+        transform: rotate(360deg);
+    }
+} */
+
+.storyavator 
+{
+position: relative;
+height: 64px;
+width:64px;
+padding: 3px;
+border-radius: 50%;
+display: flex;
+justify-content: center;
+align-items: center;
+/* border:3px solid rgb(255, 255, 255); */
+transition: border 0.1s ease-in-out;
+overflow: hidden;
+background-color: rgb(180, 180, 180);
+}
+
+
+.storyavator.active {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    padding: 3px;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .storyavator.loading::before{
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    bottom: -3px;
+    right: -3px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    animation: spin 1s linear infinite;
+  }
+   
+  .storyavator .avator-wrapper {
+    /* Inner background color */
+    border-radius: 50%;
+    padding: 2px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .storyavator .avatar-wrapper .avatar-inner {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+  }
+@media (max-width:420px) {
+    ::-webkit-scrollbar-thumb{
+        background-color:transparent;
+    }
+}
