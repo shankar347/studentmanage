@@ -7,7 +7,8 @@ import { BsCheck2All } from 'react-icons/bs'
 // import bluetick from '../assets/correct.png'
 
 const Messagebox = ({yourmessage,message,prevmessage}) => {
-  const currentuser=useRecoilValue(useratom)
+  const currentuser1=useRecoilValue(useratom)
+  let currentuser=currentuser1?.token
   const chatperson1=useRecoilValue(chatperson)
   const checkprevious= !prevmessage ||
    prevmessage.sender !== message.sender

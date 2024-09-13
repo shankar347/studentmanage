@@ -15,9 +15,11 @@ import { usepostcontext } from '../components/postcontext'
 import Changefile from '../hooks/changefile'
 
 const Settinglists = () => {
-  const [user,setuser]=useRecoilState(useratom)
+  const [user1,setuser]=useRecoilState(useratom)
+  let user=user1?.token
   const {isOpen,onClose,onOpen} =useDisclosure()
   const [posttext,setposttext]=useState('')
+  const [domains,setdomains]=useState([])
   const {imgurl,setimgurl,handleimagchange}=changeimage()
   const [loading,setloading]=useState(false)
   const fileref=useRef(null)
@@ -30,7 +32,8 @@ const Settinglists = () => {
  const {handlechangefile,filetype,fileurl
   ,seturl,filename,file1,setfil1}=Changefile()
 //  console.log(fileurl)
- console.log(file1)   
+//  console.log(file1)   
+console.log(domains)
  const fileExtension = filename ? filename.split('.').pop() : ''
   const handlecomment=(e)=>{
     
@@ -41,23 +44,49 @@ const Settinglists = () => {
         const truncatedtext=inputvalue.slice(0,500)
         setposttext(truncatedtext)
         setremainingchar(0)
+        const textparts=finddomainintext(truncatedtext)
+        const findhash=textparts.slice(1) 
+        console.log(findhash)
+        setdomains(findhash)
       }
 
    else
    {
     setposttext(inputvalue)
     setremainingchar(maxval - inputvalue.length)
+    const textparts=finddomainintext(inputvalue)
+        const findhash=textparts.slice(1) 
+        console.log(findhash)
+        setdomains(findhash)
    } 
   }
   
+  const finddomainintext=(posttext)=>{
+    if (!posttext) return []
+
+    const parts=posttext.split(/(#[^\s#]+)/g)
+
+    const cleanedParts = parts.map(part => part.startsWith('#') ? part.slice(1).trim(): part);
+    return cleanedParts.filter((part)=>part.trim() !== '')
+    }
+    // console.log(post?.img)
+
+    const textparts=finddomainintext(posttext)
+  const checkemptydomain=domains?.findIndex((domain)=>domain !== '')
+  // console.log(checkemptydomain) 
   const  handlecreate=async()=>{
      try
      {
       setloading(true)
       const formdata=new FormData()
     formdata.append('admin',user._id)
-    if (posttext)  formdata.append('text',posttext)
+    if (posttext)  formdata.append('text',textparts[0].replace(/\r?\n|\r/g,'').trim())
     if (imgurl)  formdata.append('img',imgurl)
+    if (checkemptydomain !== -1 ){
+      domains.forEach((domain)=>(
+      formdata.append('domains[]',domain)
+      ))
+    }
     if (file1) formdata.append('file',file1)
     if (file1) formdata.append('filename',file1.name)
     formdata.append('adminname',user.username)
@@ -83,21 +112,39 @@ const Settinglists = () => {
        })
        if(res.ok)
         {
-           const res2= await fetch(`/api/posts/user/${user._id}`)
-           const data= await res2.json()
-           handlepost(data)
-           onClose()
-           toast({
-            description:'Post Uploaded',
-            title:'Success'
-           })
-           setposttext('')
-           setimgurl('')
-           seturl('')
-           setfil1('')
-           setmaxval(500)
-           setremainingchar(500)
+          const errdata=await res.json()
+          if (errdata?.error)
+            {
+              console.log(errdata)
+              return toast({
+                status:'error',
+                description:errdata?.error,
+                duration:3000
+              })
+            } 
+            const res2= await fetch(`/api/posts/user/${user._id}`)
+            const data= await res2.json()
+            handlepost(data)
+            onClose()
+            toast({
+             description:'Post Uploaded',
+             title:'Success'
+            })
+            setposttext('')
+            setimgurl('')
+            seturl('')
+            setfil1('')
+            setmaxval(500)
+            setremainingchar(500)
            }
+          else{
+            // const errdata=await res.json()
+            toast({
+              description:"Error in uploading post",
+              status:'error',
+              duration:3000
+            })
+          }  
      }
      catch(e)
      {
@@ -123,6 +170,7 @@ const Settinglists = () => {
       console.log(e)
     }
   }
+
   return (
   <Flex flexDir={'column'}
   fontFamily={'sans-serif'}>
@@ -311,7 +359,8 @@ const Settinglists = () => {
         <ModalBody pb={'3'} >
             <FormControl>
                 <Textarea
-                value={posttext}
+                value={posttext} 
+                // color={findhash ? 'blue.300' :'auto'}
                 onChange={handlecomment} 
                 placeholder='Write about your post'/>
                 <Text fontSize={'xs'}
@@ -364,24 +413,39 @@ const Settinglists = () => {
                <Flex position={'relative'}>
                {
                 file1 && (
-                  <Box  alignSelf={'center'}
-                  justifySelf={'center'}
-                   w={'fulll'}
+                  <Box  
+                  // alignSelf={'center'}
+                  // justifySelf={'center'}
+                   w={'full'}
                   mx={'auto'} 
-                  textAlign={'center'}>
-                  <BsFileEarmarkPdf color='rgb(88, 164, 197)' 
+                  // alignItems={'center'}
+                  // justifyItems={'center'}
+                  // textAlign={'center'}
+                  >
+                 <Flex mt={''}
+                  width={'full'}
+                  alignItems={'center'}
+                  flexDir={'column'}
+                  alignSelf={'center'}
+                  justifyItems={'center'}>
+                 <BsFileEarmarkPdf  
+                  color='rgb(88, 164, 197)' 
                   size="120px" />
-                  <Text color={'gray.light'}>
+                  <Text color={'gray.light'}
+                  textAlign={'center'} width={'80%'} 
+                  mt={'0'} >
                     {filename}
                   </Text>
                   <Button mt={'2'} colorScheme='blue' mr={'0'}
           //  onClick={handlecreate} 
           //  isLoading={loading}
            >
-                  <a href={fileurl}  target="_blank"  rel="noopener noreferrer">
+                  <a href={fileurl}  target="_blank"  
+                  rel="noopener noreferrer">
                 View {fileExtension}
                  </a>
                  </Button>
+                 </Flex>
                   </Box>
                 )
                }
@@ -389,7 +453,7 @@ const Settinglists = () => {
                 fileurl && (
                   <CloseButton 
                   position={'absolute'}
-                  top={'5'}
+                  top={'2'}
                   bg={'gray.600'}
                   right={'2'}
                   fontSize={'10px'}

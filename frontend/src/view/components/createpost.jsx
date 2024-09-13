@@ -18,12 +18,15 @@ import Changefile from '../hooks/changefile'
 
 const Createpost = () => {
     const {isOpen,onOpen,onClose}=useDisclosure()
-   const user=useRecoilValue(useratom)
+   const user1=useRecoilValue(useratom)
+   let user=user1?.token
    const [posttext,setposttext]=useState('')
    const {imgurl,setimgurl,handleimagchange}=changeimage()
-   const maxval=500; 
+  //  const maxval=500; 
+  const [maxval,setmaxval]=useState(500)
    const [remaingchar,setremainingchar]=useState(maxval)
-   const [loading,setloading]=useState(false)  
+   const [loading,setloading]=useState(false)
+   const [domains,setdomains]=useState([])
    const fileref=useRef()
    const fileref1=useRef(null)
    const toast=useToast()
@@ -41,13 +44,33 @@ const Createpost = () => {
         const truncatedtext=inputtext.slice(0,500)
         setposttext(truncatedtext)
         setremainingchar(0)
+        const textparts=finddomainintext(truncatedtext)
+        const findhash=textparts.slice(1) 
+        console.log(findhash)
+        setdomains(findhash)
      }
      else
      {
         setposttext(inputtext)
         setremainingchar(maxval - inputtext.length)
+        const textparts=finddomainintext(inputvalue)
+        const findhash=textparts.slice(1) 
+        console.log(findhash)
+        setdomains(findhash)
      }
 }
+
+const finddomainintext=(posttext)=>{
+  if (!posttext) return []
+
+  const parts=posttext.split(/(#[^\s#]+)/g)
+
+  const cleanedParts = parts.map(part => part.startsWith('#') ? part.slice(1).trim(): part);
+  return cleanedParts.filter((part)=>part.trim() !== '')
+  }
+
+  const textparts=finddomainintext(posttext)
+  const checkemptydomain=domains?.findIndex((domain)=>domain !== '')  
 
 const handlecreate=async(e)=>{
 
@@ -55,23 +78,50 @@ const handlecreate=async(e)=>{
     setloading(true)
     try
     {
+      const formdata=new FormData()
+      formdata.append('admin',user._id)
+      if (posttext)  formdata.append('text',textparts[0].replace(/\r?\n|\r/g,'').trim())
+      if (imgurl)  formdata.append('img',imgurl)
+      if (checkemptydomain !== -1 ){
+        domains.forEach((domain)=>(
+        formdata.append('domains[]',domain)
+        ))
+      }
+      if (file1) formdata.append('file',file1)
+      if (file1) formdata.append('filename',file1.name)
+      formdata.append('adminname',user.username)
+      if (user?.adminprofilepic)
+      {
+        formdata.append('adminprofilepic',user.adminprofilepic)
+      }
+      console.log('formdata' ,formdata)
        const res= await fetch('/api/posts/create',{
         method:'POST',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body:JSON.stringify({
-            admin:user._id,
-            text:posttext,
-            img:imgurl,
-            adminname:user?.username,
-            adminprofilepic:user?.profilepic
-        })
+        // headers:{
+        //     'Content-Type':'application/json'
+        // },
+        // body:JSON.stringify({
+        //     admin:user._id,
+        //     text:posttext,
+        //     img:imgurl,
+        //     adminname:user?.username,
+        //     adminprofilepic:user?.profilepic
+        // })
+        body:formdata
        })   
-       
        
        if(res.ok)
         {
+          const errdata=await res.json()
+          if (errdata?.error)
+            {
+              console.log(errdata)
+              return toast({
+                status:'error',
+                description:errdata?.error,
+                duration:3000
+              })
+            } 
           const res2=await fetch(`/api/posts/user/${user._id}`)
           const data2=await res2.json() 
        handlepost(data2)           
@@ -82,7 +132,18 @@ const handlecreate=async(e)=>{
        })
        setposttext('')
        setimgurl('')
+       setfil1('')
+       setmaxval(500)
+       setremainingchar(500)
     }
+    else{
+      // const errdata=await res.json()
+      toast({
+        description:"Error in uploading post",
+        status:'error',
+        duration:3000
+      })
+    }  
     }
     catch(err)
     {
@@ -176,24 +237,40 @@ const handlecreate=async(e)=>{
                <Flex position={'relative'}>
                {
                 file1 && (
-                  <Box  alignSelf={'center'}
-                  justifySelf={'center'}
-                   w={'fulll'}
+                  <Box  
+                  // alignSelf={'center'}
+                  // justifySelf={'center'}
+                   w={'full'}
                   mx={'auto'} 
-                  textAlign={'center'}>
-                  <BsFileEarmarkPdf color='rgb(88, 164, 197)' 
-                  size="120px" />
-                  <Text color={'gray.light'}>
+                  // alignItems={'center'}
+                  // justifyItems={'center'}
+                  // textAlign={'center'}
+                  >
+                 <Flex mt={''}
+                  width={'full'}
+                  alignItems={'center'}
+                  flexDir={'column'}
+                  alignSelf={'center'}
+                  justifyItems={'center'}>
+                 <BsFileEarmarkPdf  
+                  color='rgb(88, 164, 197)' 
+                  size="120px" 
+                  style={{alignSelf:'center',width:'full'}}/>
+                  <Text color={'gray.light'}
+                  textAlign={'center'}
+                  width={'80%'}>
                     {filename}
                   </Text>
                   <Button mt={'2'} colorScheme='blue' mr={'0'}
           //  onClick={handlecreate} 
           //  isLoading={loading}
            >
-                  <a href={fileurl}  target="_blank"  rel="noopener noreferrer">
+                  <a href={fileurl}  target="_blank"  
+                  rel="noopener noreferrer">
                 View {fileExtension}
                  </a>
                  </Button>
+                 </Flex>
                   </Box>
                 )
                }

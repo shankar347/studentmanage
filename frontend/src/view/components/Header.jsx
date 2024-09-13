@@ -24,8 +24,8 @@ const Header = () => {
     } =useContext(searchcontext)
     const [allusers,setallusers]=useState(null)
     const {pathname}=useLocation() 
-    const {setstory}=useContext(searchcontext)      
-
+    const {setstory}=useContext(searchcontext)       
+    // console.log(allusers  )
     useEffect(()=>{
     const handlegetallusers=async()=>{
       try
@@ -46,7 +46,7 @@ const Header = () => {
    setsearchtext(e.target.value)
 
    const filteredusers=allusers?.filter((user)=>
-   user.username.toLowerCase().includes(e.target.value.toLowerCase()))
+   user?.username?.toLowerCase().includes(e.target.value.toLowerCase()))
   
    setsearchusers(filteredusers)
   }

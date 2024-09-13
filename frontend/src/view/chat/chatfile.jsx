@@ -18,7 +18,8 @@ const Chatfile = () => {
   const [selectedcchat,setselectedchat]=useRecoilState(chatperson)
   const [searchbar,setsearchbar]=useState('')
   const [fetchinguser,setfetchinguser]=useState(false)
-  const user=useRecoilValue(useratom)
+  const user1=useRecoilValue(useratom)
+  let user=user1?.token
   const toast=useToast()
   const {socket,onlineusers}=usesocket()
   console.log(selectedcchat)

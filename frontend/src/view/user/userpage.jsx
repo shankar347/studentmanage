@@ -20,8 +20,10 @@ import Userfollower from './userfollower'
 const Userpage = () => {
    const {id}=useParams()
   const {user:param,loading2}=getUserInfo()
-  const user=useRecoilValue(useratom)
-  console.log(param )
+  const user1=useRecoilValue(useratom)
+  let user=user1?.token
+  // console.log(user?._id)
+  // console.log(param)
   const {post:post1,handlepost}=usepostcontext()
   const [loading1,setloading1]=useState(false)
   const {profilepage,setprofilepage}=useContext(searchcontext)
@@ -69,7 +71,7 @@ const Userpage = () => {
      })
      if(res.ok)
       {
-        const res2=await fetch(`/api/posts/currentuser/${user._id}`)
+        const res2=await fetch(`/api/posts/user/${user._id}`)
         const data2=await res2.json()
         handlepost(data2)
       }

@@ -15,7 +15,8 @@ const Usercomments = ({userimg,username,handleditreply,
   edit,setedit,updatecomment,setupdatecomment,
   usercomment,agaodate,replyid,handledeletereply}) => {
     const [like,setlike]=useState(false)
-    const user=useRecoilValue(useratom)
+    const user1=useRecoilValue(useratom)
+    let user=user1?.token
     const [inputfocus,setinputfocus]=useState(false)
     const inputref=useRef(null) 
    

@@ -12,20 +12,50 @@ import { createpost,
         getadminposts,
         getlikedposts,
         getcommentedposts,
-        getcurretnadminposts} from '../routes/postroutes.js';
+        getcurretnadminposts,
+        getrecomendedpost} from '../routes/postroutes.js';
 import authuser from '../middlewares/authuser.js';
 import multer from 'multer'
 
 
 const router=express.Router();  
-const upload=multer({storage:multer.memoryStorage()})
+const upload=multer({storage:multer.memoryStorage(),
+        limits:{
+                fileSize:1024*1024*15,
+                fieldSize:1024*1024*15,
+                fields:10 
+        }
+}).single('file')
 
-router.post('/create' ,upload.single('file'), authuser,createpost)
+
+const handlemulterupload=(req,res,next)=>{
+        upload(req,res,(err)=>{
+                if(err instanceof multer.MulterError){
+                   if(err.code === 'LIMIT_FILE_SIZE')
+                   {
+                     return  res.status(200).json({error:'file size should be less than 15MB'})
+                   } 
+                   else if (err.code === 'LIMIT_FIELD_VALUE')
+                   {
+                        return res.status(200).json({error:'file size should be less than 15MB'})
+                   }
+                   return res.status(200).json({error:err.message})
+                }
+                else if(err){
+                   return res.json({error: "Unknown error in uploading file"})
+                }
+                next()
+        })
+}
+
+
+router.post('/create' ,handlemulterupload, authuser,createpost)
 router.get('/feed',authuser,feedposts)
 router.get('/classfeed',authuser,getclassposts)
 router.get('/likes',authuser,getlikedposts)
 router.get('/comments',authuser,getcommentedposts)
 router.get('/:id',getpost)
+router.get('/aifeed/:id',authuser,getrecomendedpost)
 router.get('/user/:id',getadminposts)
 router.get('/currentuser/:id',authuser,getcurretnadminposts)
 router.delete('/:id',authuser,deletepost)

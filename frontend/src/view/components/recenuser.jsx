@@ -7,7 +7,8 @@ import useratom from '../atom/useratom'
 
 const RecomandedUser = ({user}) => {
  
-    const currentuser=useRecoilValue(useratom)
+    const currentuser1=useRecoilValue(useratom)
+    let currentuser=currentuser1?.token
      const toast=useToast()
     const [following,setfollowing]=useState(false)
 

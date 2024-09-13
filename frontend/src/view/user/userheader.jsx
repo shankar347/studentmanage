@@ -16,7 +16,8 @@ import { Avatar, Box,
  
    const toast=useToast()
  
-   const user=useRecoilValue(useratom)
+   const user1=useRecoilValue(useratom)
+   let user=user1?.token
    const {profilepage,setprofilepage} =useContext(searchcontext)
    const [following,setfollowing]=useState(
      data?.followers?.includes(data._id))

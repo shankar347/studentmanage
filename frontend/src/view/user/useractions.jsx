@@ -13,10 +13,11 @@ import { Avatar, Box, Button, Flex, FormControl,
  
 
  
- const Useractions = ({post}) => {
+ const Useractions = ({post,likedpostid}) => {
    
    const {isOpen,onClose,onOpen}=useDisclosure()
-   const user=useRecoilValue(useratom)
+   const user1=useRecoilValue(useratom)
+   let user=user1?.token
    const toast=useToast()
    const checklike=post?.likes?.find((like)=>
   like.user===user._id)
@@ -90,6 +91,8 @@ import { Avatar, Box, Button, Flex, FormControl,
         {
          setlike(true)
          setlikecount((prev) =>prev +1)
+         likedpostid(post?._id)
+        //  console.log(post)
         }
  
         

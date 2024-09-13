@@ -8,6 +8,7 @@ import useratom from '../atom/useratom'
 import RecomandedUsers from './recendusers'
 import { searchcontext } from './searchcontext'
 import Searchinfo from './searchinfo'
+import { json } from 'react-router-dom'
 // import Poscontext from './postcontext'
 
 const Homepage = () => {
@@ -18,8 +19,37 @@ const Homepage = () => {
   const user=useRecoilState(useratom)
   const {search,searchusers,searchtext} =useContext(searchcontext)
   // console.log(posts)
+  const [likedpostid,setlikedpostid]=useState(null)
+  console.log(likedpostid)
+  console.log(posts)
 
-
+  useEffect(()=>{
+    if (likedpostid){
+    const getairecommend=async()=>{
+      try{
+        const res=await fetch(`/api/posts/aifeed/${likedpostid}`,{
+        method:'GET',
+        })
+        const data=await res.json()
+        console.log('airecomend',data)
+        setposts((prevpost)=> {
+         const combinedposts=[...prevpost,...data]
+         const uniqueposts=combinedposts.filter((post,index,self)=>
+         index === self.findIndex((p)=>p?._id === post?._id)         
+        ) 
+        return uniqueposts
+        }
+      )
+      // console.log(posts)
+     }
+     catch(err)
+     {
+       console.log(err)
+     }
+    }
+    getairecommend()
+  }
+   },[likedpostid])
 
 
   useEffect(()=>{
@@ -34,7 +64,17 @@ const Homepage = () => {
        const followres=await fetch('/api/posts/feed')
        const followdata=await followres.json()
       //  console.log(data)
-       setposts([...classdata,...followdata])
+      
+       setposts(
+        (prevpost)=>{
+          const userfeed=[...prevpost,...classdata,...followdata]
+          const uniqueposts=userfeed.filter((post,index,self)=>
+          index === self.findIndex((p)=>p?._id === post?._id))
+         
+          return uniqueposts
+        }
+       )
+      // setposts(followdata)
       // posts.push(data)
       // posts.concat(data)
       }
@@ -49,8 +89,10 @@ const Homepage = () => {
     getfeed()        
   },[])
    
-   
-  console.log(posts)
+  
+
+
+  // console.log(posts)
 
  
   
@@ -109,7 +151,7 @@ const Homepage = () => {
    {
  posts? posts?.map((post)=>{
  return <Postmodel post={post} key={post._id}
-  postadmin={post?.admin}/>
+  postadmin={post?.admin} likedpostid={setlikedpostid}/>
 }) : []
    }
    </Flex>

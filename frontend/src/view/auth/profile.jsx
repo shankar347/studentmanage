@@ -64,8 +64,14 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
       })
       return;
      }
-     setuserstate(data)
-     localStorage.setItem('token',JSON.stringify(data))
+     
+     var existtoken=JSON.parse(localStorage.getItem('token'))
+     var token=JSON.stringify({
+      token:data,
+      expiresAt:existtoken?.expiresAt
+     })
+     setuserstate(JSON.parse(token))
+     localStorage.setItem('token',token)
      toast({
       description:'Profile updated Successfully',
       title:'Error',

@@ -15,10 +15,12 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import useratom from '../atom/useratom'
 import Timecomponent from '../hooks/timecompnent'
 import { searchcontext } from './searchcontext'
+import { BsFileEarmarkPdf } from 'react-icons/bs'
 const Postpage = () => {
 
   const [like,setlike]=useState(false)
-  const {user,loading}=getUserInfo() 
+  const {user:user1,loading}=getUserInfo()
+  let user=user1?.token 
   const currentuser=useRecoilValue(useratom)
   const [post,setpost]=useState(null)
   const {postid}=useParams()
@@ -179,6 +181,29 @@ const Postpage = () => {
     </Flex>
     <Text mt={'8px'} fontSize={'md'} 
     fontFamily={'sans-serif'}>{post?.text}</Text>
+
+{
+      post?.file && (
+      <Box mt={'10px'}>
+         <BsFileEarmarkPdf color='rgb(88, 164, 197)' 
+                  size="100px" />
+      <Text>
+      {post?.filename}
+      </Text>
+      <Button mt={'1'} colorScheme='blue' mr={'7'}
+    //  onClick={handlecreate} 
+          >
+                  <a href={post?.file} 
+                  //  target="_blank"  
+                  download={post?.filename}
+                   rel="noopener noreferrer">
+                 Download
+                 </a>
+                 </Button>
+      </Box>
+      )
+     }
+
      { post?.img &&
     <Box  
     mt={'10px'}

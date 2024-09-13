@@ -9,7 +9,8 @@ import { searchcontext } from '../components/searchcontext'
 
 const Personalchat = ({chatuser ,isonline}) => {
   const {setinput} =useContext(searchcontext)
-  const currentuser=useRecoilValue(useratom)
+  const currentuser1=useRecoilValue(useratom)
+  let currentuser=currentuser1?.token
   const user=chatuser?.chatpersons[0]
   const lastmessage=chatuser?.lastmessage
   const [chatperson1,setchatperson]=useRecoilState(chatperson)

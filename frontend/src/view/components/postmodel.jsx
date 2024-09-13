@@ -1,7 +1,7 @@
 
 import { Avatar, Box, Button, Flex, Image, Input, Spinner, Text } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 // import bluetick from '../assets/correct.png'
 // import myimage from '../assets/my image.jpg'
 import {CgMore} from 'react-icons/cg'
@@ -16,21 +16,24 @@ import getUserInfo from '../hooks/handleuser'
 import { searchcontext } from './searchcontext'
 import { BsFileEarmarkPdf } from 'react-icons/bs'
 
-const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
+const Postmodel = ({post,postadmin,handledeletepost,user1,
+  likedpostid
+}) => {
   
     const [like,setlike]=useState(false)
   
-    const user=useRecoilValue(useratom)
-    
+    const user2=useRecoilValue(useratom)
+    let user=user2?.token
    const {profileloading,setprofileloading} =useContext(searchcontext)
     const [post2,setadmin]=useState(null)
     const finduser= post?.replies?.find((reply)=>reply.user ===user._id )
     const navigate=useNavigate()
      
 
-
-    
-
+   const location=useLocation()
+   const checklocation=location.pathname === '/'
+    // console.log(post)
+   
   return (
    
     <Flex fontFamily={'sans-serif'} gap={'3'} mb={'2'} 
@@ -48,6 +51,9 @@ const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
        />
       <Box w={'1px'} h={'full'} bg={'gray.light'} mb={'5px'}>
       </Box>
+   
+    {
+      post?.replies &&       
       <Box position={"relative"} w={'full'} >
         
       {
@@ -93,6 +99,8 @@ const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
         top={'0px'} left={'13px'}/>
          }
       </Box>
+    }
+
     </Flex>  
     <Flex flex={'1'}  flexDirection={'column'}  >
      <Flex justifyContent={'space-between'} 
@@ -105,10 +113,11 @@ const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
       </Flex>
        <Flex width={'60px'} justifyContent={'space-between'}>
       <Timecomponent time={post.createdAt}/>
-      { post.admin === user._id &&
+      { post.admin === user._id && !checklocation &&
        <AiOutlineDelete size={'20'} color='gray.dark'
        onClick={handledeletepost} cursor={'pointer'}/>
-        }</Flex>
+        }
+        </Flex>
      </Flex>
      <Link to={`/${postadmin}/${post?._id}`}>
       <Flex overflowY={'scroll'} width={{
@@ -123,19 +132,23 @@ const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
      </Link>  
      {
       post?.file && (
-      <Box mt={'10px'}>
+      <Box mt={'10px'} >
+          <Link to={`/${postadmin}/${post?._id}`} >
          <BsFileEarmarkPdf color='rgb(88, 164, 197)' 
-                  size="100px" />
+                  size="100px" width={'auto'} />
+          </Link>
       <Text>
-      {post?.file?.split('/')?.pop()}
+      {post?.filename}
       </Text>
+
       <Button mt={'1'} colorScheme='blue' mr={'7'}
     //  onClick={handlecreate} 
           >
                   <a href={post?.file} 
-                   target="_blank"  
+                  //  target="_blank"  
+                  download={post?.filename}
                    rel="noopener noreferrer">
-                View file
+                 Download
                  </a>
                  </Button>
       </Box>
@@ -160,8 +173,22 @@ const Postmodel = ({post,postadmin,handledeletepost,user1}) => {
          </Box>
      )}
 
+{
+  post?.domains.length !==0 && (
+    <Flex gap={'1'} width={'80%'} mt={'1'} flexWrap={'wrap'}>
+      {
+        post?.domains?.map((domain)=>(
+          <Text key={domain} color={'blue.400'}>
+            #{domain}
+          </Text>
+        ))
+      }
+      </Flex>
+  )
+}
+
      <Flex my={'12px'} flexDirection={'column'}>
-      <Useractions post={post} />
+      <Useractions post={post} likedpostid={likedpostid}/>
      </Flex>
      
     

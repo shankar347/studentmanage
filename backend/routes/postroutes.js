@@ -2,12 +2,22 @@ import Postmodel from "../model/postschema.js";
 import Usermodel from "../model/userschema.js";
 import {v2 as cloudinary} from 'cloudinary'
 import streamifier from 'streamifier'
-// import nodecache from 'node-cache'
+// import tf from '@tensorflow/tfjs-node'
+// import mobilenet from '@tensorflow-models/mobilenet'
+import { createCanvas, loadImage } from 'canvas'
+import natural from 'natural'
 
-// const postcache=new nodecache({stdTTL:600})
+const { TfIdf } = natural
 
 
-// const upload=multer({storage:multer.memoryStorage()})
+// (async () => {
+//     const { TfidfVectorizer, cosineSimilarity } = await import('tf-idf');
+    
+//     // Now you can use TfidfVectorizer and cosineSimilarity
+//   })();
+  
+
+
 
 
 const createpost=async(req,res)=>{
@@ -16,10 +26,11 @@ const createpost=async(req,res)=>{
     {
         // console.log('cloudinary',cloudinary.config.name)
         const {admin,adminname,adminprofilepic,filename,
-             text}=req.body;
+             text,domains}=req.body;
+        // console.log(domains)
         let {img}=req.body
         let file = req.file     
-        console.log(img,text,file)
+        // console.log(img,text,file)
         const user= await Usermodel.findById(admin)
         if(!user)
         {
@@ -40,15 +51,22 @@ const createpost=async(req,res)=>{
         {
           const uploadurl=  await cloudinary.uploader.upload(img)
           img=uploadurl.secure_url;
+        //   console.log(img)
         }
         let fileurl;
         if (file)
         {
 
+           
+
             const uploadresult=await new Promise((resolve,reject)=>{
             const fileupload=  cloudinary.uploader.
             upload_stream(
-                {resource_type:'auto'},
+                {resource_type:'raw',
+                // access_control: [{ access_type: 'public' }] 
+                upload_preset:'public_uplload',
+                },
+                
                 (err,result)=>{
                     if (err){
                         reject({error:err?.message})
@@ -71,6 +89,7 @@ const createpost=async(req,res)=>{
                 adminname,
                 adminprofilepic,
                 img,
+                domains,
                 file:fileurl,
                 filename
             })
@@ -83,7 +102,8 @@ const createpost=async(req,res)=>{
                 text,
                 adminname,
                 adminprofilepic,
-                img
+                img,
+                domains
             })
             await post.save()
             res.status(201).json(post)
@@ -394,10 +414,15 @@ const getclassposts=async(req,res)=>{
         return res.json("User is not found")
       }
       let department=user.department 
-      
+
       let classmates=await Usermodel.find({
         department:department
       })
+    //  console.log(user._id) 
+      classmates = classmates.filter(classmate=>(
+        classmate._id.toString() !== user._id.toString()
+      ))
+    //   console.log(classmates)
       let posts=await Postmodel.find({
         admin:{$in:classmates}
       }).sort({createdAt:-1})
@@ -501,7 +526,9 @@ const getcommentedposts=async(req,res)=>{
 
      const commentedposts=posts.filter((post)=>
      post.replies.find(
-        (reply)=>reply.user.toString()=== req.user._id.toString()))
+        (reply)=>reply.user.toString()=== req.user._id.toString())
+    
+    )
      
      res.json(commentedposts)   
     }
@@ -510,6 +537,117 @@ const getcommentedposts=async(req,res)=>{
        res.status(500).json(e.message)
     }
 }
+
+const cosineSimilarity=(vec1,vec2)=>{
+    const dotProduct = vec1?.reduce((sum, val, idx) => sum + val * vec2[idx], 0);
+    const magnitude1 = Math.sqrt(vec1?.reduce((sum, val) => sum + val * val, 0));
+    const magnitude2 = Math.sqrt(vec2?.reduce((sum, val) => sum + val * val, 0));
+    
+    if (magnitude1 === 0 || magnitude2 === 0) {
+      return 0; 
+    }
+    return dotProduct / (magnitude1 * magnitude2);
+}    
+
+const getTfIdfVector = (tfidf, text) => {
+    const vector = [];
+    tfidf.tfidfs(text, (i, measure) => {
+      vector.push(measure);
+    });
+    return vector;
+  };
+
+const getrecomendedpost=async(req,res)=>{
+   try{
+     const {id:likedpostid}=req.params
+
+     const likedpost=await Postmodel.findById(likedpostid)
+     let recomendedpost;
+     let domainrecomedations=[]
+     if (likedpost.domains && likedpost.domains.length !== 0)
+     {
+      const domainposts=await Postmodel.find({
+        domains:{
+            $in:likedpost.domains
+        }
+      })       
+      domainrecomedations=domainrecomedations.concat(domainposts).slice(0,5).filter(
+        (post)=> post?.admin.toString() !== req?.user?._id.toString()) 
+     }
+ 
+  
+
+     if(!likedpost)
+        {
+           return res.json({error:"Post is not found"})
+        }
+        
+        const tfidf =new TfIdf()
+
+        let posts=await Postmodel.find()
+        posts=posts.filter((post)=>post.text)
+        
+        if (posts.length > 50)
+        {
+            posts=posts.slice(0,50)
+        }
+
+        // console.log(posts.map((post)=>post.text))
+        // console.log(likedpost.domains) 
+        // console.log(likedpost.text)
+        posts.forEach((post)=>{
+           tfidf.addDocument(post.text)
+        })
+        if (!likedpost.text)
+            {
+                return res.json([])
+            }    
+
+       
+
+        const likedpostvector=getTfIdfVector(tfidf,likedpost.text)
+        const simialities=posts.map((post)=>
+       {
+        if(post.text){
+        const postvector=getTfIdfVector(tfidf,post.text)
+        return{
+            post:post._id,
+            similarity:cosineSimilarity(likedpostvector,postvector)
+        }
+    }
+    return null
+       }
+        ).filter(Boolean)
+    //    console.log(simialities)
+       //  return predections
+   
+        simialities.sort((a,b)=>
+           b.similarity - a.similarity
+       )
+   
+       recomendedpost=await Postmodel.find({
+       '_id' : {$in: simialities.slice(0,5).map(sim=>sim.post)
+}
+       })
+
+    const totalrecomedations=[...new Set([...recomendedpost,...domainrecomedations])]
+    .filter((post)=>(
+       post?.admin.toString() !== req?.user?._id.toString() 
+    ))
+    // console.log(domainrecomedations)   
+    // console.log(recomendedpost)
+    // console.log(totalrecomedations) 
+    // console.log(totalrecomedations)
+    return res.json(totalrecomedations)
+   }
+   catch(err)
+   {
+    res.status(500).json(err.message)
+    console.log(err?.message)
+   }
+}
+
+
 
 export {
     createpost,
@@ -525,5 +663,7 @@ export {
     deletereply,
     getlikedposts,
     getclassposts,
-    getcommentedposts
+    getcommentedposts,
+    getrecomendedpost,
+    // getrecomendedpost,
 }

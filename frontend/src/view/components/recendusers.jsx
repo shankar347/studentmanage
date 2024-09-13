@@ -8,7 +8,8 @@ const RecomandedUsers = () => {
   
   const [loading,setloading]=useState(false)
   const [sugestusers,setsugestusers]=useState(null)
-  const currentuser=useRecoilValue(useratom)
+  const currentuser1=useRecoilValue(useratom)
+  let currentuser=currentuser1?.token
   const sugestUsersWithoutcurrentUser=sugestusers?.filter((user)=>(
    user._id !== currentuser._id
   ))

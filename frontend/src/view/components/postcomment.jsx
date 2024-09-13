@@ -7,7 +7,8 @@ const Postcomment = ({post,likecount,reviewcount,
   setlikecount,setreviewcount,replies,setreplies
 }) => {
     const {isOpen,onClose,onOpen}=useDisclosure()
-    const user=useRecoilValue(useratom)
+    const user1=useRecoilValue(useratom)
+    let user=user1?.token
     const toast=useToast()
     const [like,setlike]=useState(false)
     const [reply,setreply]=useState('')

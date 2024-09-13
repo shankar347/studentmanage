@@ -23,6 +23,7 @@ const replyschma=new mongoose.Schema({
         type:String,
         required:true,
     },
+    
     profilepic:
     {
         type:String
@@ -44,9 +45,12 @@ const PostSchema=new mongoose.Schema({
     adminprofilepic:{
         type:String
     },
+    domains:[{
+        type:'String'
+    }],
     text:{
         type:String,
-        maxLength:500,
+        maxLength:2000,
     },
     img:{
         type:String

@@ -65,8 +65,13 @@ const Login = () => {
         })
        return;
       }
-      localStorage.setItem('token',JSON.stringify(data))
-      setuserstate(data)
+
+      var token=JSON.stringify({
+        token:data,
+        expiresAt:new Date().getTime() + 2* 24*60*60 * 1000
+      })
+      localStorage.setItem('token',token)
+      setuserstate(JSON.parse(token))
       toast({
         description:"Logged in Successfully"
       })

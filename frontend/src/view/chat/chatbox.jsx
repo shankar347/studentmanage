@@ -16,7 +16,8 @@ const Chatbox = () => {
   const [messages,setmessages]=useState([])
   const [chat,setchat]=useRecoilState(chatatom)
   const [loading,setloading]=useState(false)
-  const currentuser=useRecoilValue(useratom)
+  const currentuser1=useRecoilValue(useratom)
+  let currentuser=currentuser1?.token
   const toast=useToast()
   const {socket}=usesocket()
   const scrollmessageref=useRef(null)
