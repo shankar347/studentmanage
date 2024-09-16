@@ -1,5 +1,5 @@
 import { Container, useColorMode } from '@chakra-ui/react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Auth from './view/auth/auth'
 import { useRecoilValue } from 'recoil'
 import useratom from './view/atom/useratom'
@@ -15,15 +15,34 @@ import Actionlists from './view/actions/actionlists'
 import Chatfile from './view/chat/chatfile'
 import Logout from './view/auth/logout'
 import Createpost from './view/components/createpost'
+import { useEffect } from 'react'
 
 function App() {
    
 
   const {pathname}=useLocation()
-  const user=useRecoilValue(useratom)
+  const user1=useRecoilValue(useratom)
+  const user=user1?.token
+
   // console.log(pathname)
   // console.log(user)
   const {colorMode} =useColorMode()
+  const navigate=useNavigate()
+  useEffect(()=>{
+    
+    let token=JSON.parse(localStorage.getItem('token'))
+    if(token){
+    const createdat=token?.createdAt
+    if(createdat < new Date().getTime())
+    {
+     localStorage.removeItem('token'),
+     navigate('/auth')
+    }
+  }
+   navigate('/auth')
+
+  },[navigate])
+
   return (
     <>
     <Searchcontext>
