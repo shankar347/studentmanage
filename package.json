@@ -4,9 +4,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-  "dev": "NODE_ENV=development nodemon backend/server.js",
+    "dev": "NODE_ENV=development nodemon backend/server.js",
     "start": "NODE_ENV=production node backend/server.js",
-    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+    "build": "rm -rf node_modules && npm cache clean --force && npm install && npm rebuild canvas && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "type": "module",
   "keywords": [],
@@ -37,5 +37,5 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
-    }
+  }
 }
