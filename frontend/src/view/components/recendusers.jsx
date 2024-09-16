@@ -7,9 +7,10 @@ import useratom from '../atom/useratom'
 const RecomandedUsers = () => {
   
   const [loading,setloading]=useState(false)
-  const [sugestusers,setsugestusers]=useState(null)
+  const [sugestusers,setsugestusers]=useState([])
   const currentuser1=useRecoilValue(useratom)
   let currentuser=currentuser1?.token
+  
   const sugestUsersWithoutcurrentUser=sugestusers?.filter((user)=>(
    user._id !== currentuser._id
   ))
@@ -21,8 +22,13 @@ const RecomandedUsers = () => {
         setloading(true)
        const users=await fetch('api/user/randomusers')
        const data=await users.json()
-       setsugestusers(data) 
-      }
+       if (data && data?.length > 0){
+        setsugestusers(data) 
+       }
+       else{
+        console.log('data is empty')
+       }
+      } 
       catch(e)
       {
         console.log(e)

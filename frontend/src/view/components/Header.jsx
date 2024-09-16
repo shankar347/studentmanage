@@ -12,8 +12,8 @@ import { FaCog, FaCross, FaSearch, FaTimes } from 'react-icons/fa';
 import { CgCross, CgSearch, CgTime } from 'react-icons/cg';
 import { searchcontext } from './searchcontext';
 const Header = () => {
-    const user=useRecoilValue(useratom)
-  
+    const user1=useRecoilValue(useratom)
+    const user=user1?.token  
     const {colorMode,toggleColorMode}=useColorMode();
     const location=useLocation()
     const {id} =useParams();

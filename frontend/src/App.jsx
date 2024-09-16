@@ -32,8 +32,9 @@ function App() {
     
     let token=JSON.parse(localStorage.getItem('token'))
     if(token){
-    const createdat=token?.createdAt
-    if(createdat < new Date().getTime())
+    const createdat=token?.expiresAt
+    console.log(createdat < new Date().getTime())
+    if(createdat > new Date().getTime())
     {
      localStorage.removeItem('token'),
      navigate('/auth')
@@ -41,7 +42,7 @@ function App() {
   }
    navigate('/auth')
 
-  },[navigate])
+  },[])
 
   return (
     <>
