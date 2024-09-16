@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon backend/server.js",
     "front": "cross-env NODE_ENV=development frontend/",
-    "start": "NODE_ENV=production  node backend/server.js",
+    "start": "cross-env NODE_ENV=production  node backend/server.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "type": "module",
@@ -35,7 +35,5 @@
     "streamifier": "^0.1.1",
     "tf-idf": "^1.0.0",
      "cross-env": "^7.0.3"
-  },
-  "devDependencies": {
   }
 }
