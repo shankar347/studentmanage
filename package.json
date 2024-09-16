@@ -33,7 +33,9 @@
     "path": "^0.12.7",
     "socket.io": "^4.7.5",
     "streamifier": "^0.1.1",
-    "tf-idf": "^1.0.0",
+    "tf-idf": "^1.0.0"
+  },
+  "devDependencies": {
     "cross-env": "^7.0.3"
-  }
+    }
 }
