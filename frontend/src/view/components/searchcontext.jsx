@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 
 export const searchcontext=createContext()
 
@@ -18,7 +18,22 @@ const Searchcontext = ({children}) => {
     const [loading,setloading]=useState(false)
     const [visible,setvisible]=useState(false)
     const [visible1,setvisible1]=useState(false)
-
+    const [fa,setfa]=useState(null)   
+    useEffect(()=>{
+      const getfa=async()=>{
+       try{
+        const res=await fetch('/api/user/faculity')
+        const data=await res.json()
+        setfa(data)
+       }
+       catch(err)
+       {
+        console.log(err)
+       }
+      }  
+      getfa()
+    },[])
+    
   return (
     <searchcontext.Provider value={{search,setsearch,
         searchusers,setsearchusers,
@@ -32,7 +47,8 @@ const Searchcontext = ({children}) => {
         profilepage,setprofilepage,
         loading,setloading,
         visible,setvisible,
-        visible1,setvisible1
+        visible1,setvisible1,
+        fa
     }}>
       {children}
     </searchcontext.Provider>

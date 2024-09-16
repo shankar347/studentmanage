@@ -69,9 +69,10 @@ const Header = () => {
       }}>
       <input onChange={handleinputchange}
       onClick={()=>setsearch(true)}
-      value={searchtext}
+      value={searchtext} 
+      placeholder='Search your friends'
       className='searchbar'/>
-      <CloseButton bg={'gray.700'}
+      <CloseButton bg={'gray.600'}
     onClick={()=>{
       setinputvisible(false)
       setsearch(false)
@@ -80,7 +81,7 @@ const Header = () => {
     fontSize={'12px'}
       fontWeight={'500'}
       borderLeftRadius={'0'}
-        height={'35px'}/>
+        height={'40px'}/>
       </Flex>  
       </Flex>)
         : ( 

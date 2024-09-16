@@ -9,8 +9,11 @@ import { Registeruser,
          Getprofilename,
          randomusers,
          getallusers,
-         getuserprofile} from '../routes/userroutes.js'
+         getuserprofile,
+         getclassstudents,
+         checkfa} from '../routes/userroutes.js'
 import authuser from '../middlewares/authuser.js'
+
 
 const router= express.Router()
 
@@ -18,6 +21,8 @@ router.post('/register',Registeruser)
 router.post('/login',Loginuser)
 router.get('/logout',Logoutuser)
 router.get('/allusers',authuser,getallusers)
+router.get('/faculity',authuser,checkfa)
+router.get('/students',authuser,getclassstudents)
 router.get('/randomusers',authuser,randomusers)
 router.post('/follow/:id',authuser,Followuser)
 router.put('/profile/:id',authuser,updateuser)

@@ -414,9 +414,10 @@ const getclassposts=async(req,res)=>{
         return res.json("User is not found")
       }
       let department=user.department 
-
+      let college=user.college
       let classmates=await Usermodel.find({
-        department:department
+        department:department,
+        college:college
       })
     //  console.log(user._id) 
       classmates = classmates.filter(classmate=>(

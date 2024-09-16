@@ -21,7 +21,7 @@ const Searchinfo = ({user}) => {
    pl={'5px'}
    height={'80px'} width={{
     md:'50%',
-    base:'100%',
+    base:'80%',
     lg:'',
     sm:'100%'}}
     borderRadius={'5px'}

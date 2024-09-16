@@ -13,6 +13,7 @@ import {
     IconButton,
     Center,
     useToast,
+    useColorMode,
   } from '@chakra-ui/react';
 //   import { SmallCloseIcon } from '@chakra-ui/icons';
 import { useRecoilState } from 'recoil';
@@ -24,7 +25,8 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
 
   export default function UserProfileEdit() {
       
-  const [userstate,setuserstate]=useRecoilState(useratom)
+  const [userstate1,setuserstate]=useRecoilState(useratom)
+  const userstate=userstate1?.token
   const [actions,setactions]=useState({
     // name:userstate.name,
     email:userstate.email,
@@ -32,7 +34,8 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
     password:'',
     bio:userstate.bio,   
   })
-
+  
+  const {colorMode,toggleColorMode}=useColorMode();
   const [updating,setupdating]=useState(false)
   
  const toast=useToast()
@@ -56,7 +59,7 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
       })
      const data= await res.json()
      console.log(data)
-     if(data.error)
+     if(data?.error)
      {
       toast({
         description:data.error,
@@ -115,6 +118,8 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
               <Center w="full">
                 <Button w="full"
                 onClick={()=>fileref.current.click()}
+                bg={colorMode=== "dark" ? 'gray.dark' :'gray.400'}
+                color={colorMode === "dark" ? 'grary.light' : 'gray.dark'}
                 >
                   Change Icon
                   </Button>
@@ -151,7 +156,7 @@ import { Link as router, Navigate, useNavigate } from 'react-router-dom';
             <Input
               placeholder="your-email@example.com"
               _placeholder={{ color: 'gray.500' }}
-              type="email"
+              type="text"
               border={'2px solid'}
               borderColor={'gray.300'}
               value={actions.email}

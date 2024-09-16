@@ -201,7 +201,8 @@ const updateuser=async(req,res)=>{
          else
          {
             const user=await Usermodel.findById(userId);
-             console.log('first user',user)
+            console.log(user)
+            //  console.log('first user',user)
             if(profilepic)
             {
                 // console.log(profilepic)
@@ -211,12 +212,7 @@ const updateuser=async(req,res)=>{
                     destroy(user.profilepic.split('/').pop().split('.')[0])
                 }
                                    
-                const uploadres= await cloudinary.uploader.upload(profilepic,
-                    {
-                        crop:'scale',
-                        format:'auto',
-                        quality:'auto'
-                      }
+                const uploadres= await cloudinary.uploader.upload(profilepic
                 )
                 profilepic=uploadres.secure_url;
               console.log(uploadres)
@@ -386,6 +382,52 @@ const getallusers=async(req,res)=>{
         console.log(e)
     }
 }
+
+const getclassstudents=async(req,res)=>{
+    try{
+        const id=req.user._id
+
+        const faculity=await Usermodel.findById(id)
+        if(!faculity)
+        {
+            return res.json({error:"user is not found"})
+        }
+        const department=faculity.department
+        const college=faculity.college
+
+        let students=await Usermodel.find({
+            college:college,
+            department:department
+        })
+        students=students.filter((student)=>(
+            !student.isfa
+        ))
+        res.json(students)
+    }
+    catch(err)
+    {
+        console.log(err)
+    }   
+}
+
+
+const checkfa=async(req,res)=>{
+    try{
+      const id=req.user._id
+      const user=await Usermodel.findById(id)
+      const faculity=await Usermodel.find({
+        department:user.department,
+        college:user.college,
+        isfa:true
+      })
+      res.json(faculity)
+    }
+    catch(err)
+    {
+     console.log(err)
+    }
+}
+
 export {
     Registeruser,
     Loginuser,
@@ -396,5 +438,7 @@ export {
     Getprofilename,
     randomusers,
     getallusers,
-    getuserprofile
+    getuserprofile,
+    getclassstudents,
+    checkfa
 }

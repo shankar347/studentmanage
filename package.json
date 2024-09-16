@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "backend":"node backend/server.js",
+    "backend":"nodemon backend/server.js",
     "dev": "NODE_ENV=development nodemon backend/server.js",
     "start": "NODE_ENV=production node backend/server.js",
     "build": "rm -rf node_modules && npm cache clean --force && npm install && npm rebuild canvas && npm install --prefix frontend && npm run build --prefix frontend"

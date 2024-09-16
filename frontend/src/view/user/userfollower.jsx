@@ -14,6 +14,7 @@ const Userfollower = ({userid}) => {
    const {loading,setloading} =useContext(searchcontext)
    const {profilepage,setprofilepage}=useContext(searchcontext)
    const {colorMode,toggleColorMode}=useColorMode();
+  
    useEffect(()=>{
     const getuserprofile=async()=>{
     try
@@ -42,7 +43,7 @@ const Userfollower = ({userid}) => {
     {
       loading && <Flex
       
-      mx={'auto'}
+      mx={'auto'}  
       gap={{
          md:'15px',
          lg:'15px',
@@ -106,7 +107,7 @@ const Userfollower = ({userid}) => {
     pl={'5px'}
     height={'80px'} width={{
      md:'80%',
-     base:'100%',
+     base:'80%',
      lg:'75%',
      sm:'100%'}}
      borderRadius={'5px'}
@@ -116,7 +117,8 @@ const Userfollower = ({userid}) => {
          border:'1px solid',
          borderColor:colorMode=== "dark" ? 'gray.dark' :'gray.400'
      }}
-     mx={'auto'}>
+     mx={'auto'}
+     bg={colorMode === "dark" ? 'gray.800' : 'white'} >
       <Avatar src={user?.profilepic} 
       name={user?.username} width={{
         md: '40px',

@@ -120,6 +120,16 @@ import { Avatar, Box,
                  collabvia.net
              </Text>
             </Flex>
+           {
+            data?.isfa && 
+            <Text fontSize={'14px'}
+            fontWeight={'500'}
+            mt={'10px'}
+            color={'blue.500'}
+            >
+              Faculity of {data?.department}
+            </Text>
+           }
            </Box>
            <Box>
              <Avatar border={'1px solid gray'}   
@@ -218,7 +228,7 @@ import { Avatar, Box,
             cursor={"pointer"}
             color={profilepage ==='followers' ? colorMode ==='light'? "gray.dark" : 'gray.light' : 'gray'}  >
            <Text fontWeight={"bold"} >
-             Followers
+            {data?.isfa ? "Students" : " Followers"}
            </Text>
          </Flex>
        </Flex>

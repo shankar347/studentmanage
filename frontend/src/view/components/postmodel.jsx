@@ -24,12 +24,12 @@ const Postmodel = ({post,postadmin,handledeletepost,user1,
   
     const user2=useRecoilValue(useratom)
     let user=user2?.token
-   const {profileloading,setprofileloading} =useContext(searchcontext)
+   const {profileloading,setprofileloading,fa} =useContext(searchcontext)
     const [post2,setadmin]=useState(null)
     const finduser= post?.replies?.find((reply)=>reply.user ===user._id )
     const navigate=useNavigate()
-     
-
+    console.log(fa)
+   
    const location=useLocation()
    const checklocation=location.pathname === '/'
     // console.log(post)
@@ -112,6 +112,15 @@ const Postmodel = ({post,postadmin,handledeletepost,user1,
      src={bluetick} mt={'3px'}/> */}
       </Flex>
        <Flex width={'60px'} justifyContent={'space-between'}>
+       {
+        postadmin === fa[0]?._id &&
+        <Text fontSize={'13px'}
+        color={'blue.600'}
+        fontWeight={'550'}
+        >
+          F/A
+        </Text>
+       }
       <Timecomponent time={post.createdAt}/>
       { post.admin === user._id && !checklocation &&
        <AiOutlineDelete size={'20'} color='gray.dark'
@@ -159,15 +168,17 @@ const Postmodel = ({post,postadmin,handledeletepost,user1,
          <Box
          overflow={'hidden'} borderRadius={'8px'} 
          mt={'10px'}  border={'2px solid'} 
-         borderColor={'gray.light'} maxW={'450px'}>
-           <Link to={`/${postadmin}/${post?._id}`}>
-          <Image 
-          loading='lazy' 
-          src={post.img} maxH={{
+         minH={'300px'} maxH={{
           md:'500px',
           lg:'500px',
           sm:'300px',
           base:'300px'}}
+         borderColor={'gray.light'} maxW={'450px'}>
+           <Link to={`/${postadmin}/${post?._id}`}>
+          <Image 
+          loading='lazy' 
+          src={post.img} 
+          h={'full'}
            w={'full'} />
           </Link>    
          </Box>

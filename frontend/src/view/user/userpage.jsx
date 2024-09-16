@@ -28,7 +28,7 @@ const Userpage = () => {
   const [loading1,setloading1]=useState(false)
   const {profilepage,setprofilepage}=useContext(searchcontext)
   const {loading,setloading} =useContext(searchcontext)
-
+  const [students,setstudents]=useState(null)
   
 
    useEffect(()=>{    
@@ -86,7 +86,20 @@ const Userpage = () => {
       console.log(e)
     }
   }   
-   
+  console.log(students) 
+ useEffect(()=>{
+ const getstudents=async()=>{
+  try{
+   const res=await fetch('/api/user/students')
+   const data=await res.json()
+   setstudents(data)
+ }
+ catch(err){
+  console.log(err)
+ }
+ }
+ getstudents()
+ },[]) 
    
   //  if(!param) return null;
 
@@ -138,7 +151,7 @@ const Userpage = () => {
       </div> }
 
    {
-    profilepage === 'followers' && 
+    profilepage === 'followers' && !user?.isfa && 
     <div>
      {
      !loading1 && param?.followers.length !== 0 && (
@@ -148,6 +161,7 @@ const Userpage = () => {
       )
      } 
     
+
 
 
     {
@@ -165,8 +179,17 @@ const Userpage = () => {
 
     </div>
    }
-
-
+ <Flex flexDir={'column'} width={'full'}
+ alignItems={'center'}
+ justify={'center'}>
+ {
+   profilepage === 'followers' && user?.isfa && 
+   students?.map((student)=>(
+    <Userfollower key={student?._id} userid={student?._id}/>
+   ))
+   
+ }
+</Flex>
     </div>
   )
 }
